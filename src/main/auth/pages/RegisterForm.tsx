@@ -1,14 +1,5 @@
 import { useState, useRef } from "react";
-
-interface FormData {
-  nombre: string;
-  apellido: string;
-  codigo: string;
-  celular: string;
-  correo: string;
-  contrasenia: string;
-  contraseniaConmfirm: string;
-}
+import type { FormData } from "../../interface/iFormData";
 
 export default function RegisterForm() {
   const [form, setForm] = useState<FormData>({
@@ -92,7 +83,6 @@ export default function RegisterForm() {
     e.preventDefault();
     if (validate()) {
       console.log("Formulario válido:", form);
-      // enviar datos al backend
     }
   };
 
@@ -100,9 +90,9 @@ export default function RegisterForm() {
     <div className="flex justify-center items-center min-h-screen bg-base-200 px-4">
       <div className="card w-full max-w-3xl bg-base-100 shadow-xl p-6">
         <h1 className="text-4xl font-bold text-center text-primary mb-2">
-          Creación de Cuenta
+          Registro de Datos
         </h1>
-        <hr className="border-t border-gray-600 my-4"></hr>
+        <hr className="border-t border-gray-600 my-4" />
         <form
           onSubmit={handleSubmit}
           className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4"

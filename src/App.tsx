@@ -1,10 +1,12 @@
-import RegisterForm from "./pages/RegisterForm";
+
+
+import { LoginPage } from "./main/auth/pages/LoginPage";
 
 function App() {
   return (
-    <>
-      <RegisterForm />
-    </>
+    <div>
+      <LoginPage />
+    </div>
   );
 }
 
