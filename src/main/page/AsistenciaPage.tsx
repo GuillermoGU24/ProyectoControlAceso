@@ -1,7 +1,12 @@
-import React from "react";
+import { LogoutButton } from "../auth/pages/LogoutButton";
 
 const AsistenciaPage = () => {
-  return <div></div>;
+  return (
+    <div>
+      Hola
+      <LogoutButton />
+    </div>
+  );
 };
 
 export default AsistenciaPage;

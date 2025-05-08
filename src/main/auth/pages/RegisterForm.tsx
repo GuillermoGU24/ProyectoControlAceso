@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import type { FormData } from "../../interface/iFormData";
+import type { FormData } from "../../../interface/iFormData";
 
 export default function RegisterForm() {
   const [form, setForm] = useState<FormData>({
