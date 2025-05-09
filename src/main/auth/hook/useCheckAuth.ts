@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import type { AuthState } from "../../../interface/iAuthState";
-import { auth } from "../../../backend/Firebase/firebaseconfig";
+import { auth } from "../../../Firebase/firebaseconfig";
 
 export const useCheckAuth = () => {
   const [authState, setAuthState] = useState<AuthState>({

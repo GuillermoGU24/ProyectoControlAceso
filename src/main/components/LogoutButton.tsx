@@ -2,7 +2,7 @@ import { signOut } from "firebase/auth";
 // Asegúrate de importar tu configuración de Firebase
 import { useNavigate } from "react-router-dom";
 
-import { auth } from "../../../backend/Firebase/firebaseconfig";
+import { auth } from "../../Firebase/firebaseconfig";
 
 export const LogoutButton = () => {
   const navigate = useNavigate();

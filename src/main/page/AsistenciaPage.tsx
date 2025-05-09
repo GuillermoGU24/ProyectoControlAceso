@@ -1,9 +1,8 @@
-import { LogoutButton } from "../auth/pages/LogoutButton";
+import { LogoutButton } from "../components/LogoutButton";
 
 const AsistenciaPage = () => {
   return (
     <div>
-      Hola
       <LogoutButton />
     </div>
   );

@@ -7,7 +7,7 @@ import {
   getAuth,
 } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import { auth } from "../../../backend/Firebase/firebaseconfig";
+import { auth } from "../../../Firebase/firebaseconfig";
 
 export const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -43,20 +43,6 @@ export const LoginPage = () => {
     } catch (error) {
       setError("Credenciales inválidas");
     }
-  };
-
-  const handleGoogleLogin = async () => {
-    // try {
-    //   const provider = new GoogleAuthProvider();
-    //   // Para desarrollo local, usa signInWithPopup
-    //   const result = await signInWithPopup(auth, provider);
-    //   if (result) {
-    //     navigate("/");
-    //   }
-    // } catch (error) {
-    //   console.error("Error al iniciar sesión con Google:", error);
-    //   setError("Error al iniciar sesión con Google");
-    // }
   };
 
   const provider = new GoogleAuthProvider();
@@ -144,7 +130,7 @@ export const LoginPage = () => {
 
             {/* Botón de inicio de sesión */}
             <div className="form-control mt-6">
-              <button type="submit" className="btn btn-outline btn-info">
+              <button type="submit" className="btn btn-outline btn-info w-full">
                 Iniciar Sesión
               </button>
             </div>
