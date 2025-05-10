@@ -1,73 +1,38 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   signInWithEmailAndPassword,
   GoogleAuthProvider,
   signInWithPopup,
-  getRedirectResult,
   getAuth,
 } from "firebase/auth";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { auth } from "../../../Firebase/firebaseconfig";
+import { googleLoginThunk, loginThunk } from "../store/authThunks";
+import { useAppDispatch, useAppSelector } from "../store";
 
 export const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [errors, setError] = useState("");
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const { error } = useAppSelector((state) => state.auth);
 
-  // Verificar si hay resultados de redirección al cargar
-  useEffect(() => {
-    const checkRedirectResult = async () => {
-      try {
-        const result = await getRedirectResult(auth);
-        if (result) {
-          // Usuario autenticado exitosamente después de redirección
-          navigate("/");
-        }
-      } catch (error) {
-        console.error("Error procesando redirección:", error);
-        setError("Error al procesar la autenticación con Google");
-      }
+  const handleSubmit = () => {
+    const form = {
+      correo: email,
+      contrasenia: password,
     };
-
-    checkRedirectResult();
-  }, [navigate]);
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      navigate("/");
-    } catch (error) {
-      setError("Credenciales inválidas");
-    }
+    dispatch(loginThunk(form));
   };
 
-  const provider = new GoogleAuthProvider();
-  const signInWithGoogle2 = async () => {
-    const auth = getAuth();
-
-    try {
-      const result = await signInWithPopup(auth, provider);
-
-      const user = result.user;
-      const isNewUser = (result as any)._tokenResponse?.isNewUser;
-
-      if (isNewUser) {
-        console.log("🆕 Usuario nuevo en Firebase Auth");
-        // Puedes crear un perfil en Firestore aquí si lo deseas
-      } else {
-        console.log("👋 Usuario ya registrado en Firebase Auth");
-      }
-
-      return user;
-    } catch (error: any) {
-      console.error("Error al iniciar sesión:", error.code, error.message);
-      return null;
-    }
+  const handleGoogle = () => {
+    dispatch(googleLoginThunk());
   };
+
+  useEffect(() => {
+    if (error) alert(error);
+  }, [error]);
 
   return (
     <div className="min-h-screen bg-base-200 flex items-center justify-center px-4">
@@ -77,7 +42,7 @@ export const LoginPage = () => {
             Iniciar Sesión
           </h2>
 
-          <form onSubmit={handleLogin} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             {/* Campo de Email */}
             <div className="form-control">
               <label className="label">
@@ -109,7 +74,7 @@ export const LoginPage = () => {
             </div>
 
             {/* Alerta de error */}
-            {error && (
+            {errors && (
               <div className="alert alert-error">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -124,7 +89,7 @@ export const LoginPage = () => {
                     d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
                   />
                 </svg>
-                <span>{error}</span>
+                <span>{errors}</span>
               </div>
             )}
 
@@ -141,8 +106,8 @@ export const LoginPage = () => {
 
           {/* Botón de Google */}
           <button
-            onClick={signInWithGoogle2}
-            className="btn btn-outline flex items-center justify-center gap-2"
+            onClick={handleGoogle}
+            className="btn btn-outline flex items-center justify-center gap-"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -168,6 +133,12 @@ export const LoginPage = () => {
             </svg>
             Continuar con Google
           </button>
+          <Link
+            to="/auth/registro"
+            className="text-center text-blue-400 underline"
+          >
+            Registrarme
+          </Link>
         </div>
       </div>
     </div>

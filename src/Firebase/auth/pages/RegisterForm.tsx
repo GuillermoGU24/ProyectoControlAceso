@@ -1,18 +1,20 @@
-import { useState, useRef } from "react";
-import type { FormData } from "../../../interface/iFormData";
+import { useState, useRef, useEffect } from "react";
+import type { ErrorFormData, FormData } from "../../../interface/iFormData";
+import { registerThunk } from "../store/authThunks";
+import { useAppDispatch, useAppSelector } from "../store";
 
 export default function RegisterForm() {
   const [form, setForm] = useState<FormData>({
     nombre: "",
     apellido: "",
-    codigo: "",
+    codigo: 0,
     celular: "",
     correo: "",
     contrasenia: "",
     contraseniaConmfirm: "",
   });
 
-  const [errors, setErrors] = useState<Partial<FormData>>({});
+  const [errors, setErrors] = useState<Partial<ErrorFormData>>({});
 
   const fields = [
     { name: "nombre", label: "Nombre" },
@@ -31,13 +33,16 @@ export default function RegisterForm() {
 
   // Refs para inputs
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const dispatch = useAppDispatch();
+  const { error } = useAppSelector((state) => state.auth); // ← accede al error del authSlice
 
   const validate = () => {
-    const newErrors: Partial<FormData> = {};
+    const newErrors: Partial<ErrorFormData> = {};
 
     if (!form.nombre.trim()) newErrors.nombre = "El nombre es requerido.";
     if (!form.apellido.trim()) newErrors.apellido = "El apellido es requerido.";
-    if (!form.codigo.trim()) newErrors.codigo = "El código es requerido.";
+    if (!form.codigo.toString().trim())
+      newErrors.codigo = "El código es requerido.";
     if (!form.celular.trim()) {
       newErrors.celular = "El celular es requerido.";
     } else if (!/^\d{10}$/.test(form.celular)) {
@@ -82,10 +87,14 @@ export default function RegisterForm() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (validate()) {
-      console.log("Formulario válido:", form);
+      dispatch(registerThunk(form));
     }
   };
-
+  useEffect(() => {
+    if (error) {
+      alert(error);
+    }
+  }, [error]);
   return (
     <div className="flex justify-center items-center min-h-screen bg-base-200 px-4">
       <div className="card w-full max-w-3xl bg-base-100 shadow-xl p-6">
@@ -130,10 +139,7 @@ export default function RegisterForm() {
           ))}
 
           <div className="md:col-span-2">
-            <button
-              type="submit"
-              className="btn btn-primary w-full text-lg mt-2"
-            >
+            <button type="submit" className="btn btn-outline btn-info w-full">
               Registrarse
             </button>
           </div>

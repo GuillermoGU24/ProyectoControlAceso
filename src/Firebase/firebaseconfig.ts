@@ -1,18 +1,18 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth"; // Cambiar de la versión Cordova a la web estándar
-import { getFirestore } from "firebase/firestore/lite";
+import { getFirestore } from "firebase/firestore";
 
 // Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyA2HUC87GwhpVbXA7zsTbPPFG8UUnhNeVM",
-  authDomain: "asistenciaapp-487ee.firebaseapp.com",
-  projectId: "asistenciaapp-487ee",
-  storageBucket: "asistenciaapp-487ee.firebasestorage.app",
-  messagingSenderId: "912592118324",
-  appId: "1:912592118324:web:611d981b298cbd1d526061",
+  apiKey: "AIzaSyChiNgE1krPpDCjlCRbtJZFrkTct06wdE4",
+  authDomain: "accesoapp-ed27c.firebaseapp.com",
+  projectId: "accesoapp-ed27c",
+  storageBucket: "accesoapp-ed27c.firebasestorage.app",
+  messagingSenderId: "1095430573883",
+  appId: "1:1095430573883:web:ea11596a132e86e988711e",
 };
 
 // Initialize Firebase
 const fireBaseApp = initializeApp(firebaseConfig);
 export const auth = getAuth(fireBaseApp);
-export const FireBaseDB = getFirestore(fireBaseApp);
+export const db = getFirestore(fireBaseApp);
