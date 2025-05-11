@@ -1,7 +1,7 @@
 import { signOut } from "firebase/auth";
 // Asegúrate de importar tu configuración de Firebase
 import { useNavigate } from "react-router-dom";
-
+import logout from "../../assets/cerrar-sesion.png"; // Asegúrate de tener la imagen en esta ruta
 import { auth } from "../../Firebase/firebaseconfig";
 
 export const LogoutButton = () => {
@@ -18,9 +18,8 @@ export const LogoutButton = () => {
   };
 
   return (
-    <button onClick={handleLogout} className="btn">
-      <img className="w-[25px] h-[25px] p-1" alt="T" />
-      Atras
+    <button onClick={handleLogout} className="btn btn-outline btn-error">
+      <img src={logout} className="w-[25px] h-[25px] p-1" alt="Cerrar Sesión" />
     </button>
   );
 };

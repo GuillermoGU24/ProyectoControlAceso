@@ -38,14 +38,14 @@ export const LoginPage = () => {
     <div className="min-h-screen bg-base-200 flex items-center justify-center px-4">
       <div className="card w-full max-w-sm bg-base-100 shadow-xl">
         <div className="card-body">
-          <h2 className="card-title text-center justify-center mb-4">
+          <h2 className="text-2xl card-title text-center justify-center mb-4">
             Iniciar Sesión
           </h2>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Campo de Email */}
             <div className="form-control">
-              <label className="label">
+              <label className="label font-medium">
                 <span className="label-text">Email</span>
               </label>
               <input
@@ -59,7 +59,7 @@ export const LoginPage = () => {
             </div>
 
             {/* Campo de Contraseña */}
-            <div className="form-control relative">
+            <div className="form-control font-medium relative">
               <label className="label">
                 <span className="label-text">Contraseña</span>
               </label>
@@ -95,7 +95,7 @@ export const LoginPage = () => {
 
             {/* Botón de inicio de sesión */}
             <div className="form-control mt-6">
-              <button type="submit" className="btn btn-outline btn-info w-full">
+              <button type="submit" className="btn btn-primary w-full">
                 Iniciar Sesión
               </button>
             </div>
