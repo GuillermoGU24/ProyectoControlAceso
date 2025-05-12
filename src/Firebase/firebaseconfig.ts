@@ -5,15 +5,14 @@ import { getFirestore } from "firebase/firestore";
 
 // Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyChiNgE1krPpDCjlCRbtJZFrkTct06wdE4",
-  authDomain: "accesoapp-ed27c.firebaseapp.com",
-  databaseURL: "https://accesoapp-ed27c-default-rtdb.firebaseio.com",
-  projectId: "accesoapp-ed27c",
-  storageBucket: "accesoapp-ed27c.firebasestorage.app",
-  messagingSenderId: "1095430573883",
-  appId: "1:1095430573883:web:ea11596a132e86e988711e",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
-
 
 // Initialize Firebase
 const fireBaseApp = initializeApp(firebaseConfig);
