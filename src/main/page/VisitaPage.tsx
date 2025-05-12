@@ -1,22 +1,57 @@
-import React from "react";
+// src/components/VisitaPage.tsx
+import React, { useEffect, useState } from "react";
+import { ref, onValue } from "firebase/database";
+import { realTimeDB } from "../../Firebase/firebaseconfig";
 
 type Attendance = {
   nombre: string;
-  hora: string;
   correo: string;
   fecha: string;
+  hora: string;
+  timestamp?: number;
 };
 
-type AttendanceTableProps = {
-  data: Attendance[];
-};
 
-export const VisitaPage: React.FC<AttendanceTableProps> = ({ data }) => {
+export const VisitaPage: React.FC = () => {
+  const [data, setData] = useState<Attendance[]>([]);
+
+  useEffect(() => {
+    const dataRef = ref(realTimeDB, "asistencias");
+
+    const unsubscribe = onValue(dataRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const rawData = snapshot.val();
+
+        const parsedData: Attendance[] = Object.values(rawData)
+          .map((entry: any) => {
+            const dateObj = new Date(entry.fechaIngreso);
+            const fecha = dateObj.toLocaleDateString("es-CO");
+            const hora = dateObj.toLocaleTimeString("es-CO");
+
+            return {
+              nombre: entry.nombre || "",
+              correo: entry.correo || "",
+              fecha,
+              hora,
+              timestamp: dateObj.getTime(), // Para ordenar
+            };
+          })
+          .sort((a, b) => b.timestamp - a.timestamp); 
+
+        setData(parsedData);
+      } else {
+        setData([]);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-base-200 p-4">
       <div className="card w-full max-w-6xl shadow-xl bg-base-100">
         <div className="card-body">
-          <h2 className="card-title text-xl font-bold mb-4">
+          <h2 className="card-title text-xl font-bold mb-4 text-center justify-center">
             Lista de Asistencia
           </h2>
 
