@@ -1,24 +1,17 @@
-import { useEffect, useState } from "react";
-import {
-  signInWithEmailAndPassword,
-  GoogleAuthProvider,
-  signInWithPopup,
-  getAuth,
-} from "firebase/auth";
-import { Link, useNavigate } from "react-router-dom";
-import { auth } from "../../../Firebase/firebaseconfig";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 import { googleLoginThunk, loginThunk } from "../store/authThunks";
 import { useAppDispatch, useAppSelector } from "../store";
-
+import { Eye, EyeOff } from "lucide-react";
 export const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [errors, setError] = useState("");
-  const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
   const dispatch = useAppDispatch();
   const { error } = useAppSelector((state) => state.auth);
 
-  const handleSubmit = () => {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
     const form = {
       correo: email,
       contrasenia: password,
@@ -29,10 +22,6 @@ export const LoginPage = () => {
   const handleGoogle = () => {
     dispatch(googleLoginThunk());
   };
-
-  useEffect(() => {
-    if (error) alert(error);
-  }, [error]);
 
   return (
     <div className="min-h-screen bg-base-200 flex items-center justify-center px-4">
@@ -63,18 +52,29 @@ export const LoginPage = () => {
               <label className="label">
                 <span className="label-text">Contraseña</span>
               </label>
-              <input
-                type="password"
-                placeholder="••••••••"
-                className="input input-bordered w-full pr-10"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
+              <div className="input input-bordered flex items-center gap-2 w-full">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  className="grow bg-transparent focus:outline-none"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+                <button
+                  type="button"
+                  className="text-gray-500 hover:text-gray-700 focus:outline-none"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  aria-label="Mostrar u ocultar contraseña"
+                  tabIndex={-1}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
             </div>
 
             {/* Alerta de error */}
-            {errors && (
+            {error && (
               <div className="alert alert-error">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -89,7 +89,7 @@ export const LoginPage = () => {
                     d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
                   />
                 </svg>
-                <span>{errors}</span>
+                <span>{error}</span>
               </div>
             )}
 
@@ -107,7 +107,7 @@ export const LoginPage = () => {
           {/* Botón de Google */}
           <button
             onClick={handleGoogle}
-            className="btn btn-outline flex items-center justify-center gap-"
+            className="btn btn-outline flex items-center justify-center gap-2"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -133,9 +133,10 @@ export const LoginPage = () => {
             </svg>
             Continuar con Google
           </button>
+
           <Link
             to="/auth/registro"
-            className="text-center text-blue-400 underline"
+            className="text-center text-blue-400 underline mt-4"
           >
             Registrarme
           </Link>

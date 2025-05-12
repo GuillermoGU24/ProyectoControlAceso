@@ -4,6 +4,7 @@ import {
   signInWithEmailAndPassword,
   GoogleAuthProvider,
   signInWithPopup,
+  onAuthStateChanged,
 } from "firebase/auth";
 import { auth, db } from "../../firebaseconfig";
 import { doc, setDoc, getDoc } from "firebase/firestore";
@@ -29,12 +30,21 @@ export const registerThunk = createAsyncThunk<UserData, any>(
         celular: formData.celular,
       };
 
-      console.log("Intentando guardar usuario en Firestore", userData);
       await setDoc(doc(db, "usuario", user.uid), userData);
-      console.log("Usuario guardado en Firestore");      return userData;
+
+      return userData;
     } catch (err: any) {
+      let errorMessage = "Error al registrar el usuario";
+      if (err.code === "auth/email-already-in-use") {
+        errorMessage = "Este correo ya está registrado.";
+      } else if (err.code === "auth/invalid-email") {
+        errorMessage = "El correo ingresado no es válido.";
+      } else if (err.code === "auth/weak-password") {
+        errorMessage = "La contraseña es demasiado débil.";
+      }
+
       console.error("Error en registerThunk:", err);
-      return rejectWithValue(err.message || "Error al registrar el usuario");
+      return rejectWithValue(errorMessage);
     }
   }
 );
@@ -48,12 +58,24 @@ export const loginThunk = createAsyncThunk<
     const user = res.user;
     const userDoc = await getDoc(doc(db, "usuario", user.uid));
 
-    if (!userDoc.exists())
+    if (!userDoc.exists()) {
       throw new Error("No se encontraron datos del usuario");
+    }
 
     return userDoc.data() as UserData;
   } catch (err: any) {
-    return rejectWithValue(err.message);
+    let errorMessage = "Error al iniciar sesión";
+    if (
+      err.code === "auth/user-not-found" ||
+      err.code === "auth/wrong-password"
+    ) {
+      errorMessage = "Correo o contraseña incorrectos.";
+    } else if (err.code === "auth/invalid-email") {
+      errorMessage = "El correo ingresado no es válido.";
+    }
+
+    console.error("Error en loginThunk:", err);
+    return rejectWithValue(errorMessage);
   }
 });
 
@@ -89,5 +111,26 @@ export const googleLoginThunk = createAsyncThunk<UserData>(
     } catch (err: any) {
       return rejectWithValue(err.message);
     }
+  }
+);
+
+export const checkAuthThunk = createAsyncThunk<UserData | null>(
+  "auth/checkAuth",
+  async (_, { rejectWithValue }) => {
+    return new Promise<UserData | null>((resolve, reject) => {
+      const unsubscribe = onAuthStateChanged(auth, async (user) => {
+        unsubscribe(); // Solo lo ejecutamos una vez
+        if (user) {
+          const docSnap = await getDoc(doc(db, "usuario", user.uid));
+          if (docSnap.exists()) {
+            resolve(docSnap.data() as UserData);
+          } else {
+            resolve(null);
+          }
+        } else {
+          resolve(null);
+        }
+      });
+    });
   }
 );

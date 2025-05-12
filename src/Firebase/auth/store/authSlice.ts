@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { registerThunk, loginThunk, googleLoginThunk } from "./authThunks";
+import { registerThunk, loginThunk, googleLoginThunk, checkAuthThunk } from "./authThunks";
 
 export interface UserData {
   uid: string;
@@ -25,7 +25,13 @@ const initialState: AuthState = {
 const authSlice = createSlice({
   name: "auth",
   initialState,
-  reducers: {},
+  reducers: {
+    logout: (state) => {
+      state.user = null;
+      state.loading = false;
+      state.error = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(registerThunk.pending, (state) => {
@@ -63,8 +69,20 @@ const authSlice = createSlice({
       .addCase(googleLoginThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
+      })
+      .addCase(checkAuthThunk.fulfilled, (state, action) => {
+        state.user = action.payload;
+        state.loading = false;
+      })
+      .addCase(checkAuthThunk.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(checkAuthThunk.rejected, (state) => {
+        state.loading = false;
+        state.user = null;
       });
   },
 });
 
+export const { logout } = authSlice.actions; // 👈 Exportar la acción logout
 export default authSlice.reducer;

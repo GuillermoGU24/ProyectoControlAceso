@@ -1,7 +1,8 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import type { ErrorFormData, FormData } from "../../../interface/iFormData";
 import { registerThunk } from "../store/authThunks";
 import { useAppDispatch, useAppSelector } from "../store";
+import PasswordInput from "../../../main/components/pass"; // Asegúrate de ajustar la ruta
 
 export default function RegisterForm() {
   const [form, setForm] = useState<FormData>({
@@ -16,25 +17,33 @@ export default function RegisterForm() {
 
   const [errors, setErrors] = useState<Partial<ErrorFormData>>({});
 
+  // Modificamos fields para identificar los campos de contraseña
   const fields = [
     { name: "nombre", label: "Nombre" },
     { name: "apellido", label: "Apellido" },
     { name: "codigo", label: "Código", type: "number" },
     { name: "celular", label: "Celular", type: "tel" },
     { name: "correo", label: "Correo", type: "email", span: 2 },
-    { name: "contrasenia", label: "Contraseña", type: "password", span: 2 },
+    {
+      name: "contrasenia",
+      label: "Contraseña",
+      type: "password",
+      span: 2,
+      isPassword: true,
+    },
     {
       name: "contraseniaConmfirm",
       label: "Confirmar Contraseña",
       type: "password",
       span: 2,
+      isPassword: true,
     },
   ];
 
   // Refs para inputs
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const dispatch = useAppDispatch();
-  const { error } = useAppSelector((state) => state.auth); // ← accede al error del authSlice
+  const { error } = useAppSelector((state) => state.auth);
 
   const validate = () => {
     const newErrors: Partial<ErrorFormData> = {};
@@ -90,11 +99,7 @@ export default function RegisterForm() {
       dispatch(registerThunk(form));
     }
   };
-  useEffect(() => {
-    if (error) {
-      alert(error);
-    }
-  }, [error]);
+
   return (
     <div className="flex justify-center items-center min-h-screen bg-base-200 px-">
       <div className="card w-full max-w-3xl bg-base-100 shadow-xl p-6">
@@ -106,37 +111,53 @@ export default function RegisterForm() {
           onSubmit={handleSubmit}
           className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4"
         >
-          {fields.map(({ name, label, type = "text", span }, index) => (
-            <div
-              key={name}
-              className={`form-control w-full${
-                span === 2 ? " md:col-span-2" : ""
-              }`}
-            >
-              <label className="label font-medium w-full">{label}</label>
-              <label
-                className={`input input-bordered flex items-center gap-2 w-full ${
-                  errors[name as keyof FormData] ? "input-error" : ""
+          {fields.map(
+            ({ name, label, type = "text", span, isPassword }, index) => (
+              <div
+                key={name}
+                className={`form-control w-full${
+                  span === 2 ? " md:col-span-2" : ""
                 }`}
               >
-                <input
-                  type={type}
-                  name={name}
-                  value={form[name as keyof FormData]}
-                  onChange={handleChange}
-                  onKeyDown={(e) => handleKeyDown(e, index)}
-                  ref={(el) => (inputRefs.current[index] = el)}
-                  className="grow bg-transparent focus:outline-none"
-                  placeholder={label}
-                />
-              </label>
-              {errors[name as keyof FormData] && (
-                <span className="text-error text-sm mt-1">
-                  {errors[name as keyof FormData]}
-                </span>
-              )}
-            </div>
-          ))}
+                <label className="label font-medium w-full">{label}</label>
+
+                {isPassword ? (
+                  <PasswordInput
+                    name={name}
+                    value={form[name as keyof FormData] as string}
+                    onChange={handleChange}
+                    hasError={!!errors[name as keyof FormData]}
+                    placeholder={label}
+                    onKeyDown={(e) => handleKeyDown(e, index)}
+                    inputRef={(el) => (inputRefs.current[index] = el)}
+                  />
+                ) : (
+                  <label
+                    className={`input input-bordered flex items-center gap-2 w-full ${
+                      errors[name as keyof FormData] ? "input-error" : ""
+                    }`}
+                  >
+                    <input
+                      type={type}
+                      name={name}
+                      value={form[name as keyof FormData]}
+                      onChange={handleChange}
+                      onKeyDown={(e) => handleKeyDown(e, index)}
+                      ref={(el) => (inputRefs.current[index] = el)}
+                      className="grow bg-transparent focus:outline-none"
+                      placeholder={label}
+                    />
+                  </label>
+                )}
+
+                {errors[name as keyof FormData] && (
+                  <span className="text-error text-sm mt-1">
+                    {errors[name as keyof FormData]}
+                  </span>
+                )}
+              </div>
+            )
+          )}
 
           <div className="md:col-span-2">
             <button type="submit" className="btn btn-primary w-full">
@@ -144,6 +165,24 @@ export default function RegisterForm() {
             </button>
           </div>
         </form>
+        {error && (
+          <div className="alert alert-error mt-4 md:col-span-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="stroke-current shrink-0 h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <span>{error}</span>
+          </div>
+        )}
       </div>
     </div>
   );

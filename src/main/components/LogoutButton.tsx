@@ -1,17 +1,20 @@
 import { signOut } from "firebase/auth";
-// Asegúrate de importar tu configuración de Firebase
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import logout from "../../assets/cerrar-sesion.png"; // Asegúrate de tener la imagen en esta ruta
+import logoutIcon from "../../assets/cerrar-sesion.png";
 import { auth } from "../../Firebase/firebaseconfig";
+import { logout } from "../../Firebase/auth/store/authSlice";
 
 export const LogoutButton = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
-      await signOut(auth); // Cierra la sesión en Firebase
-      localStorage.removeItem("userSession"); // Borra la sesión almacenada
-      navigate("/auth/login"); // Redirige al usuario a la página de login
+      await signOut(auth);
+      localStorage.removeItem("userSession");
+      dispatch(logout());
+      navigate("/auth/login");
     } catch (error) {
       console.error("Error al cerrar sesión:", error);
     }
@@ -19,7 +22,11 @@ export const LogoutButton = () => {
 
   return (
     <button onClick={handleLogout} className="btn btn-outline btn-error">
-      <img src={logout} className="w-[25px] h-[25px] p-1" alt="Cerrar Sesión" />
+      <img
+        src={logoutIcon}
+        className="w-[25px] h-[25px] p-1"
+        alt="Cerrar Sesión"
+      />
     </button>
   );
 };
